@@ -153,12 +153,15 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
 
     }
 
+    return pixel = HSLAPixel(avgHue, avgSat, avgLum);
+
 
 }
 
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
 
 /* YOUR CODE HERE */
+
 
 }
 
