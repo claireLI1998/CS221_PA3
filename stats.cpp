@@ -5,7 +5,7 @@ stats::stats(PNG & im){
 
 /* YOUR CODE HERE */
 for(int i = 0; i < im.width(); i++){
-	for(int j = 0; j < im.height(); j++) {
+	for(int j =0; j < im.height(); j++) {
 		if(i > 0 && j > 0) {
 			sumSat[i][j] = im.getPixel(i,j) -> s + sumSat[i-1][j] + sumSat[i][j-1] - sumSat[i-1][j-1];
 		} else if (i > 0) {
@@ -123,6 +123,7 @@ return (lr.first - ul.first + 1) * (lr.second - ul.second + 1);
 HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
 
 /* YOUR CODE HERE */
+/* YOUR CODE HERE */
     HSLAPixel pixel;
     //total number of pixels
     long sum = rectArea(ul, lr);
@@ -161,7 +162,24 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
 
 /* YOUR CODE HERE */
-
+vector<int> hist;
+for(int k=0; k < 36; k++) {
+	if(ul.first > 0 && ul.second > 0) {
+		int temp = hist[lr.first][lr.second][k] - hist[ul.first - 1][lr.second][k]
+	 - hist[ul.first][lr.second - 1][k] + hist[ul.first - 1][lr.second - 1][k];
+	    hist.pop_back(temp);
+	} else if (ul.first > 0) {
+		int temp = hist[lr.first][lr.second][k] - hist[ul.first - 1][lr.second][k];
+	    hist.pop_back(temp);
+	} else if (ul.second > 0) {
+		int temp = hist[lr.first][lr.second][k] - hist[ul.first][lr.second - 1][k];
+	    hist.pop_back(temp);
+	} else {
+		int temp = hist[lr.first][lr.second][k];
+	    hist.pop_back(temp);
+	}
+	
+}
 
 }
 
