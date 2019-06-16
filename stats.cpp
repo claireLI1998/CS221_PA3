@@ -5,7 +5,7 @@ stats::stats(PNG & im){
 
 /* YOUR CODE HERE */
 for(int i = 0; i < im.width(); i++){
-	for(int j =0; j < im.height(); j++) {
+	for(int j = 0; j < im.height(); j++) {
 		if(i > 0 && j > 0) {
 			sumSat[i][j] = im.getPixel(i,j) -> s + sumSat[i-1][j] + sumSat[i][j-1] - sumSat[i-1][j-1];
 		} else if (i > 0) {
@@ -123,6 +123,36 @@ return (lr.first - ul.first + 1) * (lr.second - ul.second + 1);
 HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
 
 /* YOUR CODE HERE */
+    HSLAPixel pixel;
+    //total number of pixels
+    long sum = rectArea(ul, lr);
+    double avgHue, avgSat, avgLum;
+    int ulx = ul.first;
+    int uly = ul.second;
+    int lrx = lr.first;
+    int lry = lr.second;
+    
+    if(ulx == 0 && uly == 0){
+        avgSat = sumSat[lrx][lry]/sum;
+        avgLum = sumLum[lrx][lry]/sum;
+        avgHue = atan2(sumHueY[lrx][lry], sumHueX[lrx][lry])*180/PI;
+    }else if(ulx == 0){
+        avgSat = (sumSat[lrx][lry] - sumSat[lrx][uly - 1])/sum;
+        avgLum = (sumLum[lrx][lry] - sumLum[lrx][uly - 1])/sum;
+        avgHue = atan2(sumHueY[lrx][lry] - sumHueY[lrx][uly - 1], sumHueX[lrx][lry] - sumHueX[lrx][uly - 1])*180/PI;
+        
+    }else if(uly == 0){
+    	avgSat = (sumSat[lrx][lry] - sumSat[ulx - 1][lry])/sum;
+        avgLum = (sumLum[lrx][lry] - sumLum[ulx - 1][lry])/sum;
+        avgHue = atan2(sumHueY[lrx][lry] - sumHueY[ulx - 1][lry], sumHueX[lrx][lry] - sumHueX[ulx - 1][lry])*180/PI;
+    }else{
+    	avgSat = (sumSat[lrx][lry] - sumSat[lrx][uly - 1] - sumSat[ulx - 1][lry] + sumSat[ulx - 1][uly - 1])/sum;
+    	avgLum = (sumLum[lrx][lry] - sumLum[lrx][uly - 1] - sumLum[ulx - 1][lry] + sumLum[ulx - 1][uly - 1])/sum;
+    	avgHue = atan2(sumHueY[lrx][lry] - sumHueY[lrx][uly - 1] - sumHueY[ulx - 1][lry] + sumHueY[ulx - 1][uly - 1],
+    		           sumHueX[lrx][lry] - sumHueX[lrx][uly - 1] - sumHueX[ulx - 1][lry] + sumHueX[ulx - 1][uly - 1])*180/PI;
+
+    }
+
 
 }
 
