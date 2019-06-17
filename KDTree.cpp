@@ -111,14 +111,18 @@ void KDTree::prune(double pct, double tol){
 
 /* YOUR CODE HERE */
 pair<int,int> p = prunehelper(tol, root, root -> avg);
+if(p.second == 0) return;
 double per = (double) (p.first / p.second);
+
 if(per > pct) {
 	root -> left = NULL;
 	root -> right = NULL;
 }
 }
 
-pair<int,int> KDTree::prunehelper(double tol, Node* root, HSLAPixel avg) {
+pair<int,int> KDTree::prunehelper(double tol, Node* & root, HSLAPixel avg) {
+	if(root != NULL) {
+		
 	pair<int,int> ul = make_pair(0,0);
 	if(root -> left == NULL && root -> right == NULL) {
 		ul.second++;
@@ -134,6 +138,9 @@ pair<int,int> KDTree::prunehelper(double tol, Node* root, HSLAPixel avg) {
 	            + prunehelper(tol, root -> right, avg).second
 	            + ul.second;
     return pair<int,int> (first,second);
+    } else {
+    	return pair<int,int> (0,0);
+	}
 }
 
 void KDTree::clear() {
