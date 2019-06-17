@@ -49,15 +49,18 @@ KDTree::Node * KDTree::buildTree(stats & s, pair<int,int> ul, pair<int,int> lr) 
 
 /* YOUR CODE HERE */
 Node *root = new Node(ul, lr, s.getAvg(ul,lr));
+if(ul.first != lr.first || ul.second != lr.second){
+	
 double temp = 0;
 pair<int, int> min;
 
-for(int i = ul.first + 1; i < lr.first; i++) {
+
+for(int i = ul.first; i < lr.first; i++) {
 	long area1 = s.rectArea(ul, pair<int,int>(i,lr.second));
-	long area2 = s.rectArea(pair<int,int>(i,ul.second), lr);
+	long area2 = s.rectArea(pair<int,int>(i + 1,ul.second), lr);
 //	s.buildHist(ul, pair<int,int>(i,lr.second));
 	double temp1 = s.entropy(s.buildHist(ul, pair<int,int>(i,lr.second)), aera1);
-	double temp2 = s.entropy(s.buildHist(pair<int,int>(i,ul.second), lr), aera2);
+	double temp2 = s.entropy(s.buildHist(pair<int,int>(i + 1,ul.second), lr), aera2);
 //	s.buildHist(pair<int,int>(i,0), lr);
     double tempfinal = (double) (temp1 * aera1 + temp2 * aera2) / (aera1 + aera2);
 	if(tempfinal > temp) {
@@ -66,12 +69,12 @@ for(int i = ul.first + 1; i < lr.first; i++) {
 	}	
 }
 
-for(int j = ul.second + 1; j < lr.second; j++) {
+for(int j = ul.second; j < lr.second; j++) {
 	long area1 = s.rectArea(ul, pair<int,int>(lr.first,j));
-	long area2 = s.rectArea(pair<int,int>(ul.first,j), lr);
+	long area2 = s.rectArea(pair<int,int>(ul.first,j+1), lr);
 //	s.buildHist(ul, pair<int,int>(i,lr.second));
 	double temp1 = s.entropy(s.buildHist(ul, pair<int,int>(lr.first,j)), aera1);
-	double temp2 = s.entropy(s.buildHist(pair<int,int>(ul.first,j), lr), aera2);
+	double temp2 = s.entropy(s.buildHist(pair<int,int>(ul.first,j+1), lr), aera2);
 //	s.buildHist(pair<int,int>(i,0), lr);
     double tempfinal = (double) (temp1 * aera1 + temp2 * aera2) / (aera1 + aera2);
 	if(tempfinal > temp) {
@@ -83,12 +86,18 @@ for(int j = ul.second + 1; j < lr.second; j++) {
 //root = new Node(ul, lr, )
 if(min.second == lr.second) {
 	root -> left  = buildTree(s, ul, min);
-	root -> right = buildTree(s, pair<int,int>(min.first,ul.second) , lr);
+	root -> right = buildTree(s, pair<int,int>(min.first + 1,ul.second) , lr);
 } else {
 	root -> left  =  buildTree(s, ul, min);
-	root -> right = buildTree(s, pair<int,int>(ul.first,min.second), lr);
+	root -> right = buildTree(s, pair<int,int>(ul.first,min.second + 1), lr);
 }
 
+return root;
+} else {
+	root -> left = NULL;
+	root -> right = NULL;
+	return root;
+}
 
 }
 
