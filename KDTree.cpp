@@ -110,7 +110,30 @@ PNG KDTree::render(){
 void KDTree::prune(double pct, double tol){
 
 /* YOUR CODE HERE */
+pair<int,int> p = prunehelper(tol, root, root -> avg);
+double per = (double) (p.first / p.second);
+if(per > pct) {
+	root -> left = NULL;
+	root -> right = NULL;
+}
+}
 
+pair<int,int> KDTree::prunehelper(double tol, Node* root, HSLAPixel avg) {
+	pair<int,int> ul = make_pair(0,0);
+	if(root -> left == NULL && root -> right == NULL) {
+		ul.second++;
+		if(avg.dist(root -> avg) < tol) {
+			ul.first++;
+		}
+	}
+	int first = prunehelper(tol, root -> left, avg).first 
+	            + prunehelper(tol, root -> right, avg).first
+	            + ul.first;
+	            
+    int second = prunehelper(tol, root -> left, avg).second 
+	            + prunehelper(tol, root -> right, avg).second
+	            + ul.second;
+    return pair<int,int> (first,second);
 }
 
 void KDTree::clear() {
