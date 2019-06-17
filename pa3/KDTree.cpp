@@ -35,13 +35,61 @@ KDTree & KDTree::operator=(const KDTree & rhs){
 KDTree::KDTree(PNG & imIn){ 
 
 /* YOUR CODE HERE */
-
+	stats data = stats(imIn);
+	height = imIn.height();
+	width = imIn.width();
+	pair<int, int> ul, lr;
+	ul = make_pair(0,0);
+	lr = make_pair(width - 1, height - 1);
+	root = buildTree(data, ul, lr);
 }
 
 KDTree::Node * KDTree::buildTree(stats & s, pair<int,int> ul, pair<int,int> lr) {
 
 /* YOUR CODE HERE */
 
+	Node *curr = new Node(ul, lr, s.getAvg(ul, lr));
+	bool horizontal = true;
+    int ulx = ul.first;
+    int uly = ul.second;
+    int lrx = lr.first;
+    int lry = lr.second;
+    double area = s.rectArea(ul,lr);
+    double min = 100;
+
+    for(int i = ulx; i < lrx; i ++){
+    	pair<int, int> newlr = pair<int, int>(i, lry);
+    	pair<int, int> newul = pair<int, int>(i + 1, uly);
+    	pair<int, int> newLR, newUL;
+
+    	double ulentro = s.entropy(ul, newlr);
+    	double lrentro = s.entropy(newul, lr);
+    	double ularea = s.rectArea(ul, newlr);
+    	double lrarea = s.rectArea(newul, lr);
+    	double entro = (ularea * ulentro)/area + (lrarea * lrentro)/area;
+    	if(entro <= min){
+    		min = entro;
+    		newLR = make_pair(i, lry);
+    		newUL = make_pair(i + 1, uly);
+    	}
+    }
+
+    for(int j = uly; j < lry; j ++){
+    	pair<int, int> newlr = pair<int, int>(lrx, j);
+    	pair<int, int> newul = pair<int, int>(ulx, j + 1);
+    	pair<int, int> newLR, newUL;
+
+    	double ulentro = s.entropy(ul, newlr);
+    	double lrentro = s.entropy(newul, lr);
+    	double ularea = s.rectArea(ul, newlr);
+    	double lrarea = s.rectArea(newul, lr);
+    	double entro = (ularea * ulentro)/area + (lrarea * lrentro)/area;
+    	if(entro <= min){
+    		min = entro;
+    		newLR = make_pair(lrx, j);
+    		newUL = make_pair(ulx, j + 1);
+    	}
+    }
 }
 
 PNG KDTree::render(){
