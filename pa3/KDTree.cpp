@@ -95,7 +95,26 @@ KDTree::Node * KDTree::buildTree(stats & s, pair<int,int> ul, pair<int,int> lr) 
 PNG KDTree::render(){
 
 /* YOUR CODE HERE */
+	PNG p = new PNG(width, height);
+	renderHelper(p, root);
+	return p;
+}
 
+void KDTree::renderHelper(PNG p, Node *curr){
+	if(curr->left == NULL && curr->right == NULL){
+		for(int i = curr->upLeft.first; i < curr->lowRight.first; i ++){
+			for(int j = curr->upLeft.second; j < curr->lowRight.second; j ++){
+				HSLAPixel *pixel = p.getPixel(i, j);
+				*pixel = curr->avg;
+			}
+		}
+		return;
+	}
+	else{
+		renderHelper(p, curr->left);
+		renderHelper(p, curr);
+		renderHelper(p, curr->right);
+	}
 }
 
 void KDTree::prune(double pct, double tol){
@@ -107,7 +126,17 @@ void KDTree::prune(double pct, double tol){
 void KDTree::clear() {
 
 /* YOUR CODE HERE */
+	clearNode(root);
+}
 
+void KDTree::clearNode(Node *curr){
+	if(curr == NULL){
+		return;
+	}else{
+		clearNode(curr->left);
+		clearNode(curr->right);
+		delete curr;
+	}
 }
 
 void KDTree::copy(const KDTree & orig){
