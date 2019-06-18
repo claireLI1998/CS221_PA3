@@ -82,6 +82,7 @@ public:
      * bins holding no pixels should not be included in the sum. */
     // GIVEN for PA3
     double entropy(vector<int> & d ,int area);
+    int helper1(double hue);
 };
 
 #endif

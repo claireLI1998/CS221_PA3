@@ -173,6 +173,8 @@ private:
    * @param lr lower right point of current node's rectangle.
    */
    Node * buildTree(stats & s,pair<int,int> ul, pair<int,int> lr);
+   void clearNode(Node *curr);
+   void renderHelper(Node *curr, PNG *p);
 
    /* =================== end of private PA3 functions ============== */
 };
