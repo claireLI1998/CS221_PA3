@@ -10,7 +10,7 @@
  */
 
 #include "KDTree.h"
-
+using std::pair
 KDTree::Node::Node(pair<int,int> ul, pair<int,int> lr, HSLAPixel a)
 	:upLeft(ul),lowRight(lr),avg(a),left(NULL),right(NULL)
 	{}
@@ -63,7 +63,7 @@ for(int i = ul.first; i < lr.first; i++) {
 	double temp2 = s.entropy(s.buildHist(pair<int,int>(i + 1,ul.second), lr), aera2);
 //	s.buildHist(pair<int,int>(i,0), lr);
     double tempfinal = (double) (temp1 * aera1 + temp2 * aera2) / (aera1 + aera2);
-	if(tempfinal > temp) {
+	if(tempfinal < temp) {
 		temp = tempfinal;
 		min = make_pair(i,lr.second);
 	}	
@@ -77,7 +77,7 @@ for(int j = ul.second; j < lr.second; j++) {
 	double temp2 = s.entropy(s.buildHist(pair<int,int>(ul.first,j+1), lr), aera2);
 //	s.buildHist(pair<int,int>(i,0), lr);
     double tempfinal = (double) (temp1 * aera1 + temp2 * aera2) / (aera1 + aera2);
-	if(tempfinal > temp) {
+	if(tempfinal < temp) {
 		temp = tempfinal;
 		min = make_pair(lr.first,j);
 	}		
@@ -104,8 +104,23 @@ return root;
 PNG KDTree::render(){
 
 /* YOUR CODE HERE */
+	PNG p = new PNG(width, height);
+	renderHelper(p, root);
+	return p;
 
 }
+
+void KDTree::renderHelper(PNG & p, Node * & curr){
+	if(curr->left == NULL && curr->right == NULL){
+		int i = curr->upLeft.first;
+		int j = curr->upLeft.second;
+		*p.getPixel(i, j) = curr->avg;
+		return;
+	}
+	renderHelper(p, curr->left);
+	renderHelper(p, curr->right);
+}
+
 
 void KDTree::prune(double pct, double tol){
 
@@ -115,8 +130,12 @@ if(p.second == 0) return;
 double per = (double) (p.first / p.second);
 
 if(per > pct) {
-	root -> left = NULL;
-	root -> right = NULL;
+//	root -> left = NULL;
+//	root -> right = NULL;
+    clearNode(root -> left);
+    clearNode(root -> right);
+    	root -> left = NULL;
+    	root -> right = NULL;
 }
 }
 
@@ -146,12 +165,26 @@ pair<int,int> KDTree::prunehelper(double tol, Node* & root, HSLAPixel avg) {
 void KDTree::clear() {
 
 /* YOUR CODE HERE */
+clearNode(root);
 
+}
+
+void KDTree::clearNode(Node* & curr){
+	if(curr == NULL){
+		return;
+	}else{
+		clearNode(curr->left);
+		clearNode(curr->right);
+		delete curr;
+	}
 }
 
 void KDTree::copy(const KDTree & orig){
 
 /* YOUR CODE HERE */
+    KDTree(orig.render());
 
 }
+
+
 
