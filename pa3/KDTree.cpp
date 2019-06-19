@@ -198,8 +198,24 @@ void KDTree::clearNode(Node *curr){
 void KDTree::copy(const KDTree & orig){
 
 /* YOUR CODE HERE */
-	Node *copyTree = orig.root;
+	height = orig.height;
+	width = orig.width;
+	copyHelper(orig.root);
+
 }
 
+void KDTree::copyHelper(Node *rt){
+	if(rt != NULL){
+		Node *temp = new Node(rt->upLeft, rt->lowRight, rt->avg);
+		temp->left = rt->left;
+		temp->right = rt->right;
+		root = temp;
+		copyHelper(root->left);
+		copyHelper(root->right);
+	}
+	else{
+		return;
+	}
+}
 
 

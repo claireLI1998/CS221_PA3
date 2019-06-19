@@ -140,37 +140,48 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
         avgSat = sumSat[lrx][lry]/sum;
         avgLum = sumLum[lrx][lry]/sum;
         avgHue = atan2(sumHueY[lrx][lry], sumHueX[lrx][lry])*180/PI;
-    }
-    else if(ulx == 0){
-        
+    }else if(ulx == 0){
+        avgSat = (sumSat[lrx][lry] - sumSat[lrx][uly - 1])/sum;
+        avgLum = (sumLum[lrx][lry] - sumLum[lrx][uly - 1])/sum;
+        avgHue = atan2(sumHueY[lrx][lry] - sumHueY[lrx][uly - 1], sumHueX[lrx][lry] - sumHueX[lrx][uly - 1])*180/PI;
+
+    }else if(uly == 0){
+        avgSat = (sumSat[lrx][lry] - sumSat[ulx - 1][lry])/sum;
+        avgLum = (sumLum[lrx][lry] - sumLum[ulx - 1][lry])/sum;
+        avgHue = atan2(sumHueY[lrx][lry] - sumHueY[ulx - 1][lry], sumHueX[lrx][lry] - sumHueX[ulx - 1][lry])*180/PI;
+    }else{
+        avgSat = (sumSat[lrx][lry] - sumSat[lrx][uly - 1] - sumSat[ulx - 1][lry] + sumSat[ulx - 1][uly - 1])/sum;
+        avgLum = (sumLum[lrx][lry] - sumLum[lrx][uly - 1] - sumLum[ulx - 1][lry] + sumLum[ulx - 1][uly - 1])/sum;
+        avgHue = atan2(sumHueY[lrx][lry] - sumHueY[lrx][uly - 1] - sumHueY[ulx - 1][lry] + sumHueY[ulx - 1][uly - 1],
+                       sumHueX[lrx][lry] - sumHueX[lrx][uly - 1] - sumHueX[ulx - 1][lry] + sumHueX[ulx - 1][uly - 1])*180/PI;
+
     }
 
-
+    return pixel = HSLAPixel(avgHue, avgSat, avgLum);
 }
 
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
 
 /* YOUR CODE HERE */
-    vector<int> hist;
+    
 for(int k=0; k < 36; k++) {
     if(ul.first > 0 && ul.second > 0) {
         int temp = hist[lr.first][lr.second][k] - hist[ul.first - 1][lr.second][k]
      - hist[ul.first][lr.second - 1][k] + hist[ul.first - 1][lr.second - 1][k];
-        hist.pop_back(temp);
+        hist.push_back(temp);
     } else if (ul.first > 0) {
         int temp = hist[lr.first][lr.second][k] - hist[ul.first - 1][lr.second][k];
-        hist.pop_back(temp);
+        hist.push_back(temp);
     } else if (ul.second > 0) {
         int temp = hist[lr.first][lr.second][k] - hist[ul.first][lr.second - 1][k];
-        hist.pop_back(temp);
+        hist.push_back(temp);
     } else {
         int temp = hist[lr.first][lr.second][k];
-        hist.pop_back(temp);
+        hist.push_back(temp);
     }
     
 }
-
-
+    
 }
 
 // takes a distribution and returns entropy

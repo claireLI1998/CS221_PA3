@@ -175,6 +175,7 @@ private:
    Node * buildTree(stats & s,pair<int,int> ul, pair<int,int> lr);
    void clearNode(Node *curr);
    void renderHelper(Node *curr, PNG *p);
+   void copyHelper(Node *curr);
 
    /* =================== end of private PA3 functions ============== */
 };
