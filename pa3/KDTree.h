@@ -173,9 +173,10 @@ private:
    * @param lr lower right point of current node's rectangle.
    */
    Node * buildTree(stats & s,pair<int,int> ul, pair<int,int> lr);
-   void clearNode(Node *curr);
-   void renderHelper(Node *curr, PNG *p);
-   void copyHelper(Node *curr);
+   pair<int,int> prunehelper(double tol, Node* & root, HSLAPixel avg);
+   void clearNode(Node* &curr);
+   void renderHelper(PNG &p, Node* &curr);
+   Node* copyHelper(const Node* curr);
 
    /* =================== end of private PA3 functions ============== */
 };

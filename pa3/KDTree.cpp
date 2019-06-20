@@ -10,7 +10,7 @@
  */
 
 #include "KDTree.h"
-
+using std::pair;
 KDTree::Node::Node(pair<int,int> ul, pair<int,int> lr, HSLAPixel a)
 	:upLeft(ul),lowRight(lr),avg(a),left(NULL),right(NULL)
 	{}
@@ -43,86 +43,44 @@ ul = make_pair(0,0);
 lr = make_pair(width - 1, height -1);
 root = buildTree(data,ul,lr);
 
-
-
 }
 
 KDTree::Node * KDTree::buildTree(stats & s, pair<int,int> ul, pair<int,int> lr) {
 
 /* YOUR CODE HERE */
-	Node *root = new Node(ul, lr, s.getAvg(ul,lr));
-	int ulx = ul.first;
-    int uly = ul.second;
-    int lrx = lr.first;
-    int lry = lr.second;
-    double area = s.rectArea(ul,lr);
-    
-
+Node *root = new Node(ul, lr, s.getAvg(ul,lr));
 if(ul.first != lr.first || ul.second != lr.second){
 	
-double temp = 0;
+double temp = 9999999;
 pair<int, int> min;
 
 
-for(int i = ulx; i < lrx; i ++){
-    	pair<int, int> newlr = pair<int, int>(i, lry);
-    	pair<int, int> newul = pair<int, int>(i + 1, uly);
-    	pair<int, int> newLR, newUL;
+for(int i = ul.first; i < lr.first; i++) {
+	long area1 = s.rectArea(ul, pair<int,int>(i,lr.second));
+	long area2 = s.rectArea(pair<int,int>(i + 1,ul.second), lr);
+//	s.buildHist(ul, pair<int,int>(i,lr.second));
+	double temp1 = s.entropy(ul, pair<int,int>(i,lr.second));
+	double temp2 = s.entropy(pair<int,int>(i + 1,ul.second), lr);
+//	s.buildHist(pair<int,int>(i,0), lr);
+    double tempfinal = (double) (temp1 * area1 + temp2 * area2) / (area1 + area2);
+	if(tempfinal < temp) {
+		temp = tempfinal;
+		min = make_pair(i,lr.second);
+	}	
+}
 
-    	double ulentro = s.entropy(ul, newlr);
-    	double lrentro = s.entropy(newul, lr);
-    	double ularea = s.rectArea(ul, newlr);
-    	double lrarea = s.rectArea(newul, lr);
-    	double entro = (ularea * ulentro)/area + (lrarea * lrentro)/area;
-    	if(entro <= temp){
-    		temp = entro;
-    		min = make_pair(i, lry);
-    		newUL = make_pair(i + 1, uly);
-    	}
-    }
-
-    for(int j = uly; j < lry; j ++){
-    	pair<int, int> newlr = pair<int, int>(lrx, j);
-    	pair<int, int> newul = pair<int, int>(ulx, j + 1);
-    	pair<int, int> newLR, newUL;
-
-    	double ulentro = s.entropy(ul, newlr);
-    	double lrentro = s.entropy(newul, lr);
-    	double ularea = s.rectArea(ul, newlr);
-    	double lrarea = s.rectArea(newul, lr);
-    	double entro = (ularea * ulentro)/area + (lrarea * lrentro)/area;
-    	if(entro <= temp){
-    		temp = entro;
-    		min = make_pair(lrx, j);
-    		newUL = make_pair(ulx, j + 1);
-    	}
-
-// for(int i = ul.first; i < lr.first; i++) {
-// 	long area1 = s.rectArea(ul, pair<int,int>(i,lr.second));
-// 	long area2 = s.rectArea(pair<int,int>(i + 1,ul.second), lr);
-// //	s.buildHist(ul, pair<int,int>(i,lr.second));
-// 	double temp1 = s.entropy(s.buildHist(ul, pair<int,int>(i,lr.second)), area1);
-// 	double temp2 = s.entropy(s.buildHist(pair<int,int>(i + 1,ul.second), lr), area2);
-// //	s.buildHist(pair<int,int>(i,0), lr);
-//     double tempfinal = (double) (temp1 * area1 + temp2 * area2) / (area1 + area2);
-// 	if(tempfinal > temp) {
-// 		temp = tempfinal;
-// 		min = make_pair(i,lr.second);
-// 	}	
-// }
-
-// for(int j = ul.second; j < lr.second; j++) {
-// 	long area1 = s.rectArea(ul, pair<int,int>(lr.first,j));
-// 	long area2 = s.rectArea(pair<int,int>(ul.first,j+1), lr);
-// //	s.buildHist(ul, pair<int,int>(i,lr.second));
-// 	double temp1 = s.entropy(s.buildHist(ul, pair<int,int>(lr.first,j)), area1);
-// 	double temp2 = s.entropy(s.buildHist(pair<int,int>(ul.first,j+1), lr), area2);
-// //	s.buildHist(pair<int,int>(i,0), lr);
-//     double tempfinal = (double) (temp1 * area1 + temp2 * area2) / (area1 + area2);
-// 	if(tempfinal > temp) {
-// 		temp = tempfinal;
-// 		min = make_pair(lr.first,j);
-// 	}		
+for(int j = ul.second; j < lr.second; j++) {
+	long area1 = s.rectArea(ul, pair<int,int>(lr.first,j));
+	long area2 = s.rectArea(pair<int,int>(ul.first,j+1), lr);
+//	s.buildHist(ul, pair<int,int>(i,lr.second));
+	double temp1 = s.entropy(ul, pair<int,int>(lr.first,j));
+	double temp2 = s.entropy(pair<int,int>(ul.first,j+1), lr);
+//	s.buildHist(pair<int,int>(i,0), lr);
+    double tempfinal = (double) (temp1 * area1 + temp2 * area2) / (area1 + area2);
+	if(tempfinal < temp) {
+		temp = tempfinal;
+		min = make_pair(lr.first,j);
+	}		
 }
 
 //root = new Node(ul, lr, )
@@ -141,51 +99,77 @@ return root;
 	return root;
 }
 
-	
-
 }
 
 PNG KDTree::render(){
 
 /* YOUR CODE HERE */
 	PNG *p = new PNG(width, height);
-	renderHelper(root, p);
+	renderHelper(*p, root);
 	return *p;
 
 }
 
-void KDTree::renderHelper(Node *curr, PNG *p){
+void KDTree::renderHelper(PNG & p, Node * & curr){
 	if(curr->left == NULL && curr->right == NULL){
-		for(int i = curr->upLeft.first; i < curr->lowRight.first; i ++){
-			for(int j = curr->upLeft.second; j < curr->lowRight.second; j ++){
-				HSLAPixel *pixel = p->getPixel(i, j);
-				*pixel = curr->avg;
-			}
-		}
+		int i = curr->upLeft.first;
+		int j = curr->upLeft.second;
+		*p.getPixel(i, j) = curr->avg;
 		return;
 	}
-	else{
-		renderHelper(curr->left, p);
-		renderHelper(curr, p);
-		renderHelper(curr->right, p);
-	}
+	renderHelper(p, curr->left);
+	renderHelper(p, curr->right);
 }
+
 
 void KDTree::prune(double pct, double tol){
 
 /* YOUR CODE HERE */
+pair<int,int> p = prunehelper(tol, root, root -> avg);
+if(p.second == 0) return;
+double per = (double) (p.first / p.second);
 
+if(per > pct) {
+//	root -> left = NULL;
+//	root -> right = NULL;
+    clearNode(root -> left);
+    clearNode(root -> right);
+    	root -> left = NULL;
+    	root -> right = NULL;
+}
+}
 
+pair<int,int> KDTree::prunehelper(double tol, Node* & root, HSLAPixel avg) {
+	if(root != NULL) {
+		
+	pair<int,int> ul = make_pair(0,0);
+	if(root -> left == NULL && root -> right == NULL) {
+		ul.second++;
+		if(avg.dist(root -> avg) < tol) {
+			ul.first++;
+		}
+	}
+	int first = prunehelper(tol, root -> left, avg).first 
+	            + prunehelper(tol, root -> right, avg).first
+	            + ul.first;
+	            
+    int second = prunehelper(tol, root -> left, avg).second 
+	            + prunehelper(tol, root -> right, avg).second
+	            + ul.second;
+    return pair<int,int> (first,second);
+    } else {
+    	return pair<int,int> (0,0);
+	}
 }
 
 void KDTree::clear() {
 
 /* YOUR CODE HERE */
-	clearNode(root);
+clearNode(root);
 
 }
 
-void KDTree::clearNode(Node *curr){
+void KDTree::clearNode(Node* & curr){
 	if(curr == NULL){
 		return;
 	}else{
@@ -198,24 +182,28 @@ void KDTree::clearNode(Node *curr){
 void KDTree::copy(const KDTree & orig){
 
 /* YOUR CODE HERE */
-	height = orig.height;
-	width = orig.width;
-	copyHelper(orig.root);
+//    Node *copyTree = orig.root;
+    height = orig.height;
+    width = orig.width;
+    Node* root1 = orig.root;
+    root = copyHelper(root1);
 
 }
 
-void KDTree::copyHelper(Node *rt){
-	if(rt != NULL){
-		Node *temp = new Node(rt->upLeft, rt->lowRight, rt->avg);
-		temp->left = rt->left;
-		temp->right = rt->right;
-		root = temp;
-		copyHelper(root->left);
-		copyHelper(root->right);
+KDTree::Node* KDTree::copyHelper(const Node* rt){
+
+/* YOUR CODE HERE */
+    if(rt != NULL) {
+    Node* temp = new Node(rt -> upLeft, rt -> lowRight, rt -> avg);
+
+    temp->left = copyHelper(rt -> left);
+    temp->right = copyHelper(rt -> right);
+    return temp;
+    } else {
+    	return NULL;
 	}
-	else{
-		return;
-	}
+
 }
+
 
 
