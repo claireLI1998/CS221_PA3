@@ -116,11 +116,9 @@ int stats::helper1(double hue) {
 long stats::rectArea(pair<int,int> ul, pair<int,int> lr){
 
 /* YOUR CODE HERE */
-    long area;
+    cout<< (lr.first - ul.first + 1) * (lr.second - ul.second + 1)<< endl;
+    return (lr.first - ul.first + 1) * (lr.second - ul.second + 1);
     
-    area = (lr.first - ul.first + 1) * (lr.second - ul.second + 1);
-    
-    return area;
 }
 
 
@@ -163,21 +161,21 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
 
 /* YOUR CODE HERE */
-    
+    vector<int> arr;
 for(int k=0; k < 36; k++) {
     if(ul.first > 0 && ul.second > 0) {
         int temp = hist[lr.first][lr.second][k] - hist[ul.first - 1][lr.second][k]
      - hist[ul.first][lr.second - 1][k] + hist[ul.first - 1][lr.second - 1][k];
-        hist.push_back(temp);
+        arr.push_back(temp);
     } else if (ul.first > 0) {
         int temp = hist[lr.first][lr.second][k] - hist[ul.first - 1][lr.second][k];
-        hist.push_back(temp);
+        arr.push_back(temp);
     } else if (ul.second > 0) {
         int temp = hist[lr.first][lr.second][k] - hist[ul.first][lr.second - 1][k];
-        hist.push_back(temp);
+        arr.push_back(temp);
     } else {
         int temp = hist[lr.first][lr.second][k];
-        hist.push_back(temp);
+        arr.push_back(temp);
     }
     
 }
